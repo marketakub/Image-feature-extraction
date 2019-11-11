@@ -20,6 +20,12 @@ import mahotas.features
 ######## colormap chan be changed here
 cmap_vir = cm.get_cmap('viridis')
 
+###################################### Haralick features ###########################################
+
+def Haralick_features_for(imname):
+    img = mahotas.imread(imname)
+    return mahotas.features.haralick(img).mean(0)
+
 
 ####################################################################################################
 ######################################### scatter plot #############################################
@@ -180,7 +186,7 @@ counts = (len(ds), len(ds_child))
 images_from_rtdc_dataset, images_from_rtdc_dataset_masks = framecapture_notflat(ds_child)
 images_from_rtdc_dataset = images_from_rtdc_dataset[0]
 images_from_rtdc_dataset_masks = images_from_rtdc_dataset_masks[0]
-images_from_rtdc_dataset_segmented = images_from_rtdc_dataset * images_from_rtdc_dataset_masks
+images_from_rtdc_dataset_segmented = pd.DataFrame({'images':(images_from_rtdc_dataset * images_from_rtdc_dataset_masks)})
 
 
 ################################################ PLOTTING #######################################################
@@ -198,64 +204,60 @@ density_scatter(ds_child["bright_avg"], ds_child["bright_sd"], bins = [1000,100]
 figure.canvas.mpl_connect('pick_event', onpick)
 
 
-
 #%%
 
 ###################################################################################################################
-############################################## SELECTION ##########################################################
+######################################### FEATURES COMPUTATION ####################################################
 ###################################################################################################################
 
-Images_selected = []
-Images_selected_indices = []
+
+########## gets rid of empty cells
+
+featuretest = images_from_rtdc_dataset_segmented['images']
+for idx in range(len(featuretest)):
+    if featuretest[idx].shape[1] == 0:
+        images_from_rtdc_dataset_segmented = images_from_rtdc_dataset_segmented.drop([idx])
 
 
-print("\n If the image shows your cell of choice, press 1, if not press 0, to terminate press any letter key")
+########## calculates haralick features
 
-#for idx in range(len(images_from_rtdc_dataset)):
-for idx in range(6188, len(images_from_rtdc_dataset)):   
-    
-    plt.figure(figsize=(3,1.5))
-    plt.imshow(images_from_rtdc_dataset.loc[idx].values[0], cmap='gray')
-    plt.pause(0.1)
-    choice = int(input("Yes (1) or No (0)?   "))
-    plt.close()
+#images_from_rtdc_dataset_segmented2 = images_from_rtdc_dataset_segmented.drop([25])
+#images_from_rtdc_dataset_segmented.replace(r'^\s*$', np.nan, regex=True, inplace=True)
+#featuretest3 = featuretest2.dropna(axis=0, how = 'all', inplace=False)
 
-    if choice == 1 :
-        Images_selected.append(images_from_rtdc_dataset.loc[idx].values[0])
-        Images_selected_indices.append(idx)
-        print('Image appended')
-        print(len(Images_selected_indices))
-        
-        
-    else:
-        print('Image not appended')
-        print(idx)
+featuretest2 = images_from_rtdc_dataset_segmented.dtypes
+featuretest2 = images_from_rtdc_dataset_segmented['images']
+featuretest4 = featuretest2['images'].astype(int)
 
-Images_selected_segmented = images_from_rtdc_dataset_segmented[Images_selected_indices]
-Images_selected_all=pd.DataFrame(Images_selected, Images_selected_indices)
-Images_selected_all_segmented=pd.DataFrame({'images': Images_selected, 'segmented':Images_selected_segmented, 'indices':Images_selected_indices})
- 
-plt.figure(figsize=(3,1.5))
-plt.imshow(Images_selected_all_segmented.iloc[1][1], cmap='gray')
+
+featurestest = mahotas.features.haralick(images_from_rtdc_dataset_segmented['images'].astype(int)).mean(0)
+
+
+Features_Har = map(Haralick_features_for, images_from_rtdc_dataset_segmented)
 
 
 
 
-#%%        
-############################# Pickle selected dataset #######################################
-
-with open('pickled_lemons', 'wb') as fp:
-    pickle.dump(Images_selected_all, fp)
-
-########################## Load pickled dataset ############################################
-    
-with open ('pickled_lemons', 'rb') as fp:
-    loaded_lemons = pickle.load(fp)
- 
-
-for idx in range(0 , len(loaded_lemons)):
-    plt.figure(figsize=(3,1.5))
-    plt.imshow(loaded_lemons.iloc[idx][0], cmap='gray')
 
 
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
