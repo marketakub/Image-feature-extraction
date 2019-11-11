@@ -144,16 +144,13 @@ FL3_threshold = 100
 
 
 ##########################
-filepath2 =  r"F:\MPL\UK ERLANGEN DATA\20191018_Marketa_Alex_fibrotic-lung_3week"   # this filepath stays the same for all the analysed files (path to a folder that stores all the excel files together)
-filepath1B = filepath[:-9]
 ds = dclab.new_dataset(filepath + ".rtdc")
 exp_date = ds.config["experiment"]["date"]
 exp_time = ds.config["experiment"]["time"]
 patient = exp_date + '_' + sample1
 identifier = patient
 
-################################################ BASIC FILTERS #######################################################
-
+############################## BASIC FILTERS SET TO PREFILTER LEMON CELL DATASET #####################################
 ds.config["calculation"]["emodulus temperature"] = ds["temp"]
 ds.config["calculation"]["emodulus viscosity"] = 54.7 # 0.8 MC
 ds.config["filtering"]["area_um min"] = 50
@@ -178,6 +175,8 @@ images_from_rtdc_dataset = images_from_rtdc_dataset[0]
 images_from_rtdc_dataset_masks = images_from_rtdc_dataset_masks[0]
 images_from_rtdc_dataset_segmented = images_from_rtdc_dataset * images_from_rtdc_dataset_masks
 
+
+################################################ PLOTTING #######################################################
 figure = plt.figure(figsize=(20,5))
 ax = plt.subplot(1,5,1, xlabel = 'Area [$\mu$m$^2$]', xlim = (10,300), ylabel = 'Deformation [a.u.]', ylim = (0, 0.4))
 density_scatter(ds_child["area_um"], ds_child["deform"], bins = [1000,100], ax = ax)
