@@ -227,10 +227,11 @@ for idx in range(6188, len(images_from_rtdc_dataset)):
 
 Images_selected_segmented = images_from_rtdc_dataset_segmented[Images_selected_indices]
 Images_selected_all=pd.DataFrame(Images_selected, Images_selected_indices)
-Images_selected_all_segmented=pd.DataFrame({'images': Images_selected, 'masks':Images_selected_segmented, 'indices':Images_selected_indices})
+Images_selected_all_segmented=pd.DataFrame({'images': Images_selected, 'segmented':Images_selected_segmented, 'indices':Images_selected_indices})
  
 plt.figure(figsize=(3,1.5))
-plt.imshow(Images_selected_all_segmented.iloc[1][0], cmap='gray')
+plt.imshow(Images_selected_all_segmented.iloc[1][1], cmap='gray')
+
 
 
 
