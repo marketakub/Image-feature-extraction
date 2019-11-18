@@ -213,16 +213,43 @@ for idx in range(len(images_from_rtdc_dataset_segmented)):
         images_from_rtdc_dataset_segmented = images_from_rtdc_dataset_segmented.drop([idx])
 
 
-########## calculates haralick features
+########## calculates and plots haralick features
 
 features_haralick = []
 for idx in range(len(images_from_rtdc_dataset_segmented)):
     features_har_1im = mahotas.features.haralick(images_from_rtdc_dataset_segmented['images'].iloc[idx]).mean(0)
     features_haralick.append(features_har_1im)
 
+features_haralick=pd.DataFrame(features_haralick)
+
+
+
+
 
 ########## calculates Zernike features
 
+
+
+figure = plt.figure(figsize=(20,10))
+ax = plt.subplot(2,3,1, xlabel = 'Haralick 1', xlim = (0,1), ylabel = 'Haralick 2', ylim = (0, 6000))
+ax.scatter(features_haralick.iloc[:,0],features_haralick.iloc[:,1], cmap = cmap_vir, marker = ".", s = 4, picker = True)
+
+ax = plt.subplot(2,3,2, xlabel = 'Haralick 3', xlim = (0.2,1), ylabel = 'Haralick 4', ylim = (0, 6000))
+ax.scatter(features_haralick.iloc[:,2],features_haralick.iloc[:,3], cmap = cmap_vir, marker = ".", s = 4, picker = True)
+
+ax = plt.subplot(2,3,3, xlabel = 'Haralick 5', xlim = (0.4,1), ylabel = 'Haralick 6', ylim = (0, 80))
+ax.scatter(features_haralick.iloc[:,4],features_haralick.iloc[:,5], cmap = cmap_vir, marker = ".", s = 4, picker = True)
+
+ax = plt.subplot(2,3,4, xlabel = 'Haralick 7', xlim = (0,20000), ylabel = 'Haralick 8', ylim = (0, 7))
+ax.scatter(features_haralick.iloc[:,6],features_haralick.iloc[:,7], cmap = cmap_vir, marker = ".", s = 4, picker = True)
+
+ax = plt.subplot(2,3,5, xlabel = 'Haralick 9', xlim = (0,5), ylabel = 'Haralick 10', ylim = (0,0.005))
+ax.scatter(features_haralick.iloc[:,8],features_haralick.iloc[:,9], cmap = cmap_vir, marker = ".", s = 4, picker = True)
+
+ax = plt.subplot(2,3,6, xlabel = 'Haralick 11', xlim = (0, 4), ylabel = 'Haralick 12', ylim = (-0.6,-0.1))
+ax.scatter(features_haralick.iloc[:,10],features_haralick.iloc[:,11], cmap = cmap_vir, marker = ".", s = 4, picker = True)
+
+figure.canvas.mpl_connect('pick_event', onpick)
 
 
 
