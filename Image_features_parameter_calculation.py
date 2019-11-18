@@ -20,11 +20,6 @@ import mahotas.features
 ######## colormap chan be changed here
 cmap_vir = cm.get_cmap('viridis')
 
-###################################### Haralick features ###########################################
-
-def Haralick_features_for(imname):
-    img = mahotas.imread(imname)
-    return mahotas.features.haralick(img).mean(0)
 
 
 ####################################################################################################
@@ -128,8 +123,8 @@ def framecapture_notflat(ds):
         cellimg_cropped = cellimg[pos_y-25:pos_y+25,pos_x-35:pos_x+35] # used for lemon cells
         cellimg_cropped_i_m = cell_i_m[pos_y-25:pos_y+25,pos_x-35:pos_x+35] # multiplied by mask
         
-        cellimg_cropped = cellimg_cropped/255
-        cellimg_cropped_i_m = cellimg_cropped_i_m/255
+        cellimg_cropped = cellimg_cropped #/255
+        cellimg_cropped_i_m = cellimg_cropped_i_m #/255
         
         Images.append(cellimg_cropped)
         Images_i_m.append(cellimg_cropped_i_m)
@@ -166,16 +161,16 @@ identifier = patient
 ############################## BASIC FILTERS SET TO PREFILTER LEMON CELL DATASET #####################################
 ds.config["calculation"]["emodulus temperature"] = ds["temp"]
 ds.config["calculation"]["emodulus viscosity"] = 54.7 # 0.8 MC
-ds.config["filtering"]["area_um min"] = 50
+ds.config["filtering"]["area_um min"] = 15
 ds.config["filtering"]["area_um max"] = 600
 ds.config["filtering"]["area_ratio min"] = 1
 ds.config["filtering"]["area_ratio max"] = 1.2
 ds.config["filtering"]["aspect min"] = 1
 ds.config["filtering"]["aspect max"] = 3
-ds.config["filtering"]["deform min"] = 0.04
+ds.config["filtering"]["deform min"] = 0
 ds.config["filtering"]["deform max"] = 2
-ds.config["filtering"]["bright_avg min"] = 90   # to exclude too dark / too bright events
-ds.config["filtering"]["bright_avg max"] = 126
+ds.config["filtering"]["bright_avg min"] = 70   # to exclude too dark / too bright events
+ds.config["filtering"]["bright_avg max"] = 150
 ds.config["filtering"]["y_pos min"] = 0   # the y_pos limits have to be changed if the channel was off-center
 ds.config["filtering"]["y_pos max"] = 25
 ds.apply_filter()  # this step is important!
@@ -213,33 +208,27 @@ figure.canvas.mpl_connect('pick_event', onpick)
 
 ########## gets rid of empty cells
 
-featuretest = images_from_rtdc_dataset_segmented['images']
-for idx in range(len(featuretest)):
-    if featuretest[idx].shape[1] == 0:
+for idx in range(len(images_from_rtdc_dataset_segmented)):
+    if images_from_rtdc_dataset_segmented[idx].shape[1] == 0:
         images_from_rtdc_dataset_segmented = images_from_rtdc_dataset_segmented.drop([idx])
 
 
 ########## calculates haralick features
 
-#images_from_rtdc_dataset_segmented2 = images_from_rtdc_dataset_segmented.drop([25])
-#images_from_rtdc_dataset_segmented.replace(r'^\s*$', np.nan, regex=True, inplace=True)
-#featuretest3 = featuretest2.dropna(axis=0, how = 'all', inplace=False)
-
-featuretest2 = images_from_rtdc_dataset_segmented.dtypes
-featuretest2 = images_from_rtdc_dataset_segmented['images']
-featuretest4 = featuretest2['images'].astype(int)
+features_haralick = []
+for idx in range(len(images_from_rtdc_dataset_segmented)):
+    features_har_1im = mahotas.features.haralick(images_from_rtdc_dataset_segmented['images'].iloc[idx]).mean(0)
+    features_haralick.append(features_har_1im)
 
 
-featurestest = mahotas.features.haralick(images_from_rtdc_dataset_segmented['images'].astype(int)).mean(0)
-
-
-Features_Har = map(Haralick_features_for, images_from_rtdc_dataset_segmented)
+########## calculates Zernike features
 
 
 
 
 
 
+plt.imshow(images_from_rtdc_dataset_segmented['images'][1400], cmap='gray')
 
 
 
